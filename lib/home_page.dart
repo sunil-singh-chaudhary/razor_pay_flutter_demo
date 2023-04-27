@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -5,7 +7,8 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:razor_pay_flutter_demo/payment_model.dart';
 import 'package:razor_pay_flutter_demo/payment_screen.dart';
 
-String KEY_ID = 'rzp_test_1ntALFaaETMdzg';
+String KEY_ID =
+    'rzp_test_1ntALFaaETMdzg'; //change YOUR KEYID WHICH YOU GEt FRoM RAZOR PAY ACCOUNT I WILL DISSMISS ThIS KEY ERROR IF YOU DONt YOUR KEY HERE
 String KEY_SECRET = 'r5tAwc6ESVTpndVu6VOCk741';
 
 class HomePage extends StatefulWidget {
@@ -17,7 +20,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final _globalkey = GlobalKey<FormState>();
-  PaymentModel? _formMap = PaymentModel();
+  final _formMap = PaymentModel();
   Prefill prefilmodel = Prefill();
   @override
   Widget build(BuildContext context) {
@@ -42,7 +45,7 @@ class _HomePageState extends State<HomePage> {
                 },
                 onSaved: (value) {
                   //  _formMap['amount'] = value;
-                  _formMap!.amount = value;
+                  _formMap.amount = value;
                 },
               ),
               TextFormField(
@@ -59,7 +62,7 @@ class _HomePageState extends State<HomePage> {
                 },
                 onSaved: (value) {
                   // _formMap['name'] = value;
-                  _formMap!.name = value;
+                  _formMap.name = value;
                 },
               ),
               TextFormField(
@@ -76,7 +79,7 @@ class _HomePageState extends State<HomePage> {
                 },
                 onSaved: (value) {
                   // _formMap['description'] = value;
-                  _formMap!.description = value;
+                  _formMap.description = value;
                 },
               ),
               TextFormField(
@@ -125,16 +128,16 @@ class _HomePageState extends State<HomePage> {
                 _globalkey.currentState!.save();
 
                 Retry retrymdel = Retry(enabled: 'true', maxCount: '1');
-                _formMap?.prefill = prefilmodel;
-                _formMap?.sendSmsHash = 'true';
+                _formMap.prefill = prefilmodel;
+                _formMap.sendSmsHash = 'true';
                 External ext_model = External(wallets: ['paytm']);
 
-                _formMap?.key = KEY_ID;
-                _formMap?.retry = retrymdel;
-                _formMap?.sendSmsHash = 'true';
-                _formMap?.paymentModelExternal = ext_model;
+                _formMap.key = KEY_ID;
+                _formMap.retry = retrymdel;
+                _formMap.sendSmsHash = 'true';
+                _formMap.paymentModelExternal = ext_model;
 
-                print(json.encode(_formMap?.toJson()));
+                print(json.encode(_formMap.toJson()));
                 NavigateToFinalScreen(_formMap);
               }
             },
