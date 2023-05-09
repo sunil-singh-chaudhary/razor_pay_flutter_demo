@@ -4,15 +4,10 @@ import 'dart:convert';
 import 'package:http/http.dart ' as http;
 
 class servicewrapper {
-// https://androidtutorial.blueappsoftware.com/webapi/razorpay-php-app/orderapi.php
-
 //https://codewithsunil.com/razorpay_php/razorpay-php-testapp-master/orderapi.php/
   static var baseurl =
       "https://codewithsunil.com/razorpay_php/razorpay-php-testapp-master/orderapi.php/";
-  static var mainfolder = ""; // "single/";
-  static var subfolder = "";
-  static var apifolder = "razorpay_php";
-  static var mediafolder = "media/";
+
   static var securitycode = "123";
   callOrderApi(String txnid, String amount) async {
     dynamic jsonresponse = "[]";
