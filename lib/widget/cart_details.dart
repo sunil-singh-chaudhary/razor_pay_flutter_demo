@@ -67,7 +67,7 @@ class CartDetails extends StatelessWidget {
                 },
               ),
             ),
-            AddingCart(),
+            const AddingCart(),
             SizedBox(
               height: 7.h,
               width: 53.w,

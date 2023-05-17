@@ -3,7 +3,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:razor_pay_flutter_demo/payment_feature/db_user.dart';
 
@@ -33,7 +32,6 @@ class _HomePageState extends State<HomePage> {
 
   getDBData() async {
     final db_dataList = await dbHelper.getDataFromDatabase();
-
     setState(() {
       userList = db_dataList;
     });
@@ -47,14 +45,13 @@ class _HomePageState extends State<HomePage> {
     if (userList.isNotEmpty) {
       print(userList[0].paymentID);
       print(userList[0].orderId);
-      print(userList[0].OrderPrice);
+      print(userList[0].orderPrice);
       print(userList[0].orderDetails);
     } else {
       // handle the case when userList is empty
       return const CircularProgressIndicator();
     }
     // return your widget tree here
-
     return Scaffold(
       appBar: AppBar(title: const Text('Razor Pay')),
       body: SingleChildScrollView(

@@ -7,7 +7,7 @@ import '../provider_star/star_count.dart';
 class RatingBar extends StatelessWidget {
   final int starCount;
   final int rating;
-  RatingBar({this.starCount = 5, this.rating = 0});
+  const RatingBar({super.key, this.starCount = 5, this.rating = 0});
 
   @override
   Widget build(BuildContext context) {

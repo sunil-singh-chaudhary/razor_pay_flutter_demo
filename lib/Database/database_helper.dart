@@ -94,7 +94,7 @@ class DBHelper {
           // };
           return User(
             orderId: decryptedOrderId,
-            OrderPrice: orderPrice,
+            orderPrice: orderPrice,
             paymentID: paymentID,
             orderDetails: orderDetails,
           );

@@ -1,6 +1,5 @@
 // ignore_for_file: avoid_print
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:provider/provider.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:sizer/sizer.dart';
@@ -8,8 +7,7 @@ import 'package:sizer/sizer.dart';
 import '../Database/database_helper.dart';
 import '../payment_services/razor_pay_api.dart';
 import '../provider_star/star_count.dart';
-import '../ratingbar/rating_bar.dart';
-import '../widget/adding_cart.dart';
+import '../radioModel/my_radio.dart';
 import '../widget/cart_details.dart';
 import 'payment_model.dart';
 
@@ -37,7 +35,7 @@ class PaymentScreenState extends State<PaymentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final counter_provider = context.watch<StarCountProvider>();
+    final counterProvider = context.watch<StarCountProvider>();
     return Scaffold(
       body: Column(
         children: [
@@ -131,21 +129,24 @@ class PaymentScreenState extends State<PaymentScreen> {
                 ),
                 child: Row(
                   //BOX DETAILS
-                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         SizedBox(
                           child: Container(
                             height: 20.h,
                             width: 20.w,
-                            margin: EdgeInsets.all(1.h),
+                            margin: EdgeInsets.only(top: 1.h),
                             decoration: const BoxDecoration(
-                              color: Colors.greenAccent,
+                              color: Colors.white,
                               borderRadius: BorderRadius.all(
                                 Radius.circular(20),
                               ),
                             ),
+                            child: MyRadioButtonGroup(),
                           ),
                         ),
                         SizedBox(
@@ -173,7 +174,7 @@ class PaymentScreenState extends State<PaymentScreen> {
                         )
                       ],
                     ),
-                    CartDetails(),
+                    const CartDetails(),
                   ],
                 ),
               ),
@@ -203,6 +204,7 @@ class PaymentScreenState extends State<PaymentScreen> {
                       context: context,
                       formMap: widget.formMap,
                       responseCallback: (response) {
+                        //insert succes data into Database
                         insertDatabaseData(response);
                       },
                       failedCallback: (failresponse) {
