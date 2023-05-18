@@ -65,7 +65,6 @@ class _MyRadioButtonGroupState extends State<MyRadioButtonGroup> {
             groupValue: _value,
             onChanged: (value) {
               setState(() => _value = value!);
-              print(_value);
             },
           ),
         ],

@@ -3,20 +3,19 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:razor_pay_flutter_demo/googleMap/location_provider.dart';
-import 'package:razor_pay_flutter_demo/payment_feature/payment_model.dart';
 
 import 'googleMap/google_map.dart';
 import 'package:sizer/sizer.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+
   // await DBHelper.database;
   FlutterError.onError = (FlutterErrorDetails details) {
     // Handle the error and log or display the error message and stack trace
     debugPrint('Flutter error: ${details.exception}');
     debugPrint('Stack trace:\n${details.stack}');
   };
-  PaymentModel formMap = PaymentModel();
 
   runZonedGuarded(() {
     runApp(MultiProvider(providers: [

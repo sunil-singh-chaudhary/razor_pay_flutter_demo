@@ -9,20 +9,19 @@ import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 import 'package:razor_pay_flutter_demo/googleMap/location_provider.dart';
 import 'package:razor_pay_flutter_demo/googleMap/seach_screen.dart';
-import 'package:razor_pay_flutter_demo/googleMap/search_box.dart';
-import 'package:sizer/sizer.dart';
 
 import 'car_service.dart';
 
-LatLng source = const LatLng(28.6545, 77.3677);
-LatLng destination = const LatLng(28.6394, 77.3109);
+// LatLng source = const LatLng(28.6545, 77.3677);
+// LatLng destination = const LatLng(28.6394, 77.3109);
+LatLng source = const LatLng(0, 0);
+LatLng destination = const LatLng(0, 0);
 List<LatLng> polylinecordinates = [];
 LocationData? currentlocation;
 Marker? marker;
-
+List? backPressData;
 Circle? circle;
 // ignore: constant_identifier_names
-const APIKEY = "AIzaSyCWGF51tjIgdaMQ1wyY4GlBRKddH0O8VA8";
 
 Completer<GoogleMapController> mapcontroller = Completer();
 
@@ -38,11 +37,11 @@ class GoogleMapDemo extends StatefulWidget {
   double? longitude;
   StreamSubscription<LocationData>? locationSubscription;
   final Map<String, Marker> _markerMap = {};
+  final Map<String, Circle> _circleMap = {};
   Uint8List? imageData;
   final source_controller = TextEditingController();
-  final destination_controller = TextEditingController();
   final FocusNode searchFocusNode = FocusNode();
-
+  String? googlekey;
   @override
   State<GoogleMapDemo> createState() => _GoogleMapDemoState();
 }
@@ -52,10 +51,8 @@ class _GoogleMapDemoState extends State<GoogleMapDemo> {
 
   @override
   void initState() {
-    //checkPermission();
     super.initState();
-    getLocation();
-    getPolyPoints();
+    initializeApiKey();
   }
 
   @override
@@ -66,7 +63,7 @@ class _GoogleMapDemoState extends State<GoogleMapDemo> {
 
   static CameraPosition initialLocation = CameraPosition(
     target: source,
-    zoom: 14,
+    zoom: 5, // 5 means less zoom increase 5 will increase zoom
   );
 
   void getLocation() async {
@@ -80,7 +77,7 @@ class _GoogleMapDemoState extends State<GoogleMapDemo> {
       }
       widget.locationSubscription =
           location.onLocationChanged.listen((newLocalData) {
-        debugPrint("GetLocation--> $newLocalData");
+        debugPrint("currentLocation--> $newLocalData");
 
         updateaddMarker('currentposition', newLocalData, "Current Position",
             widget.imageData!);
@@ -94,6 +91,25 @@ class _GoogleMapDemoState extends State<GoogleMapDemo> {
         debugPrint("Permission Denied");
       }
     }
+    addMarkeDestination(
+      'source',
+      LocationData.fromMap({
+        "latitude": source.latitude,
+        "longitude": source.longitude,
+      }),
+      "source Position",
+    );
+    animateCameraToMove(
+        LatLng(source.latitude, source.longitude), mapcontroller);
+
+    addMarkeDestination(
+      'destinations',
+      LocationData.fromMap({
+        "latitude": destination.latitude,
+        "longitude": destination.longitude,
+      }),
+      "Destination Position",
+    );
     setState(() {});
   }
 
@@ -103,25 +119,40 @@ class _GoogleMapDemoState extends State<GoogleMapDemo> {
     final GoogleMapController controller = await currentLocation.future;
     controller.animateCamera(
       CameraUpdate.newCameraPosition(CameraPosition(
-        bearing: 192.8334901395799,
+        bearing: 192.232340,
         target: target,
         tilt: 0,
-        zoom: 14,
+        zoom: 20,
+      )),
+    );
+  }
+
+  void animateCameraToMove(
+      LatLng target, Completer<GoogleMapController> currentLocation) async {
+    final GoogleMapController controller = await currentLocation.future;
+    controller.moveCamera(
+      CameraUpdate.newCameraPosition(CameraPosition(
+        bearing: 192.232340,
+        target: target,
+        tilt: 0,
+        zoom: 20,
       )),
     );
   }
 
   //  Show line betwenn two final and start positions
   void getPolyPoints() async {
+    // CarServiceIcon.showSnackbar(context, widget.googlekey!);
     debugPrint('start polypoints');
+
     PolylinePoints polylinePoints = PolylinePoints();
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      APIKEY,
+      widget.googlekey!,
       PointLatLng(source.latitude, source.longitude),
       PointLatLng(destination.latitude, destination.longitude),
     );
     debugPrint(result.errorMessage);
-
+    polylinecordinates.clear();
     if (result.points.isNotEmpty) {
       for (var everyPoint in result.points) {
         debugPrint('adding-->${result.points}');
@@ -158,26 +189,48 @@ class _GoogleMapDemoState extends State<GoogleMapDemo> {
             border: InputBorder.none,
           ),
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => SearchScreen()),
-            );
+            final currentContext = context;
+            Future<void>.microtask(() async {
+              final result = await Navigator.push(
+                currentContext,
+                MaterialPageRoute(
+                  builder: (context) => SearchScreen(
+                    googlekey: widget.googlekey!,
+                  ),
+                ),
+              );
+              setState(() {
+                backPressData = result;
+              });
+              // CarServiceIcon.showSnackbar(currentContext, result);
+            });
           },
         ),
       ),
-      body: GoogelMapUI(mapController),
+      body: googelMapUI(mapController),
       floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.location_searching),
-          onPressed: () {
-            debugPrint("Clicked");
-            //add pubspec.yml geocoding for converting loation name to lat lng
-            //add pubspec.yml flutter_google_places for powerful google map search
-            // String source = widget.source_controller.text;
-
-            //await CarServiceIcon().searchPlaces(APIKEY, source);
-
-            // getLocation();
-            // getPolyPoints();
+          onPressed: () async {
+            var sourcebak = backPressData![0];
+            var destinationback = backPressData![1];
+            try {
+              final srclatLng = await CarServiceIcon.getLatLngFromAddress(
+                  sourcebak, widget.googlekey!);
+              final srclatitude = srclatLng['latitude'];
+              final srclongitude = srclatLng['longitude'];
+              final destlatLng = await CarServiceIcon.getLatLngFromAddress(
+                  destinationback, widget.googlekey!);
+              final destlatitude = destlatLng['latitude'];
+              final destlongitude = destlatLng['longitude'];
+              setState(() {
+                source = LatLng(srclatitude!, srclongitude!);
+                destination = LatLng(destlatitude!, destlongitude!);
+              });
+            } catch (e) {
+              debugPrint('Error: $e');
+            }
+            getLocation();
+            getPolyPoints();
           }),
     );
   }
@@ -187,6 +240,16 @@ class _GoogleMapDemoState extends State<GoogleMapDemo> {
     var latlong = LatLng(loc.latitude!, loc.longitude!);
 
     setState(() {
+      //remove old marker or circle and add new when updated map
+      if (id == 'source') {
+        // Remove the old source marker
+        if (widget._markerMap.containsKey('source')) {
+          widget._markerMap.remove('source');
+        }
+      } else {
+        // Remove any other markers (if needed)
+        // widget._markerMap.clear();
+      }
       marker = Marker(
         markerId: MarkerId(id),
         position: latlong,
@@ -211,11 +274,15 @@ class _GoogleMapDemoState extends State<GoogleMapDemo> {
           fillColor: Colors.blue.withAlpha(70));
     });
     widget._markerMap[id] = marker!;
+    widget._circleMap[id] = circle!;
   }
 
 // add icon in destination
   void addMarkeDestination(String id, LocationData loc, String msg) {
     var latlong = LatLng(loc.latitude!, loc.longitude!);
+    //clear old markon map
+    // widget._markerMap.clear();
+
     marker = Marker(
       markerId: MarkerId(id),
       position: latlong,
@@ -227,37 +294,19 @@ class _GoogleMapDemoState extends State<GoogleMapDemo> {
     );
 
     widget._markerMap[id] = marker!;
+    setState(() {});
   }
 
-  Widget GoogelMapUI(Completer<GoogleMapController> mapController) {
+  Widget googelMapUI(Completer<GoogleMapController> mapController) {
     return currentlocation != null
         ? GoogleMap(
             mapType: MapType.normal,
             myLocationEnabled: true,
             myLocationButtonEnabled: true,
             initialCameraPosition: initialLocation,
-            // markers: Set.of((marker != null) ? [marker!] : [])..add(destinationMarker),,
-            // circles: Set.of((circle != null) ? [circle!] : []),
+
             onMapCreated: (controller) {
               mapController.complete(controller);
-
-              addMarkeDestination(
-                'source',
-                LocationData.fromMap({
-                  "latitude": source.latitude,
-                  "longitude": source.longitude,
-                }),
-                "source Position",
-              );
-
-              addMarkeDestination(
-                'destinations',
-                LocationData.fromMap({
-                  "latitude": destination.latitude,
-                  "longitude": destination.longitude,
-                }),
-                "Destination Position",
-              );
             },
             polylines: {
               Polyline(
@@ -269,10 +318,21 @@ class _GoogleMapDemoState extends State<GoogleMapDemo> {
             },
             //important to show default icon dont remove it
             markers: widget._markerMap.values.toSet(),
+            circles: widget._circleMap.values.toSet(),
             // circles: widget.,
           )
         : const Center(
             child: CircularProgressIndicator(),
           );
+  }
+
+  void initializeApiKey() async {
+    String? key =
+        await CarServiceIcon.getApiKey(); // Call the getApiKey() function
+    setState(() {
+      widget.googlekey = key;
+    });
+    getLocation();
+    getPolyPoints();
   }
 }
