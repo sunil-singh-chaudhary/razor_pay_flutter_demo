@@ -35,7 +35,7 @@ class PaymentScreenState extends State<PaymentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // final counterProvider = context.watch<StarCountProvider>();
+    final counterProvider = context.watch<StarCountProvider>();
     return Scaffold(
       body: Column(
         children: [

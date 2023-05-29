@@ -13,7 +13,7 @@ class LocationProvider with ChangeNotifier {
 
   LocationProvider()
       : _location = Location(),
-        _locationPosition = LatLng(0, 0);
+        _locationPosition = const LatLng(0, 0);
 
   initialization() async {
     await getUserLocation();
@@ -45,7 +45,7 @@ class LocationProvider with ChangeNotifier {
           currentLocation.longitude!,
         );
 
-        print(_locationPosition);
+        debugPrint("$_locationPosition");
 
         notifyListeners();
       },

@@ -12,8 +12,6 @@ import 'package:razor_pay_flutter_demo/googleMap/seach_screen.dart';
 
 import 'car_service.dart';
 
-// LatLng source = const LatLng(28.6545, 77.3677);
-// LatLng destination = const LatLng(28.6394, 77.3109);
 LatLng source = const LatLng(0, 0);
 LatLng destination = const LatLng(0, 0);
 List<LatLng> polylinecordinates = [];
@@ -39,7 +37,7 @@ class GoogleMapDemo extends StatefulWidget {
   final Map<String, Marker> _markerMap = {};
   final Map<String, Circle> _circleMap = {};
   Uint8List? imageData;
-  final source_controller = TextEditingController();
+  final sourceController = TextEditingController();
   final FocusNode searchFocusNode = FocusNode();
   String? googlekey;
   @override
@@ -52,7 +50,12 @@ class _GoogleMapDemoState extends State<GoogleMapDemo> {
   @override
   void initState() {
     super.initState();
+    loadCarImage();
     initializeApiKey();
+  }
+
+  void loadCarImage() async {
+    widget.imageData = await CarServiceIcon.getMarker(context);
   }
 
   @override
@@ -67,7 +70,6 @@ class _GoogleMapDemoState extends State<GoogleMapDemo> {
   );
 
   void getLocation() async {
-    widget.imageData = await CarServiceIcon.getMarker(context);
     try {
       // await location.changeSettings(interval: 60000);
       currentlocation = await location.getLocation();
@@ -180,7 +182,7 @@ class _GoogleMapDemoState extends State<GoogleMapDemo> {
         ),
         title: TextField(
           focusNode: widget.searchFocusNode,
-          controller: widget.source_controller,
+          controller: widget.sourceController,
           style: const TextStyle(color: Colors.white),
           cursorColor: Colors.white,
           decoration: const InputDecoration(

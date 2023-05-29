@@ -47,10 +47,12 @@ class _HomePageState extends State<HomePage> {
       print(userList[0].orderId);
       print(userList[0].orderPrice);
       print(userList[0].orderDetails);
-    } else {
-      // handle the case when userList is empty
-      return const CircularProgressIndicator();
     }
+
+    //  else {
+    //   // handle the case when userList is empty
+    //   // return const CircularProgressIndicator();
+    // }
     // return your widget tree here
     return Scaffold(
       appBar: AppBar(title: const Text('Razor Pay')),

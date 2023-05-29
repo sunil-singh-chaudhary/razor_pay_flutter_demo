@@ -3,9 +3,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:razor_pay_flutter_demo/googleMap/location_provider.dart';
+import 'package:razor_pay_flutter_demo/provider_star/star_count.dart';
 
 import 'googleMap/google_map.dart';
 import 'package:sizer/sizer.dart';
+
+import 'home_page.dart';
+import 'payment_feature/payment_model.dart';
+import 'payment_feature/payment_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,8 +28,13 @@ void main() {
         create: (context) {
           return LocationProvider();
         },
-      )
-    ], child: const MyApp()));
+      ),
+      ChangeNotifierProvider<StarCountProvider>(
+        create: (context) {
+          return StarCountProvider();
+        },
+      ),
+    ], child: MyApp()));
   }, (error, stackTrace) {
     // Handle the error and log or display the error message and stack trace
     debugPrint('Uncaught error: $error');
@@ -33,22 +43,23 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
+  MyApp({super.key});
+  PaymentModel formMap = PaymentModel();
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    // PaymentModel formMap = PaymentModel();
-
     return Sizer(builder: (context, orientation, deviceType) {
       return MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: GoogleMapDemo(
-          title: 'GOOGLE MAP',
-        ),
+
+        home: HomePage(),
+
+        // GoogleMapDemo(
+        //   title: 'GOOGLE MAP',
+        // ),
       );
     });
   }
